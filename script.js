@@ -103,11 +103,11 @@
                 shield_wall: { name: 'Shield Wall', description: 'Reduces incoming damage by 50% for 2 turns.', execute: (player, enemy) => { player.addStatus('shielded', 2); UI.log(`${player.name} raises their shield!`, 'ability'); } },
                 fireball: { name: 'Fireball', description: 'Hurls a ball of fire for 25-50 damage.', execute: (player, enemy) => { const dmg = Game.calculateDamage(38, 0.7); enemy.takeDamage(dmg); Audio.play('fireball'); UI.log(`${player.name} casts Fireball for ${dmg} damage!`, 'attack'); } },
                 mana_drain: { name: 'Mana Drain', description: 'Drains 10 mana from the enemy and restores it to you.', execute: (player, enemy) => { const drained = enemy.drainMana(10); player.updateMana(drained); UI.showDamageIndicator(drained, 'player', false, 'drain'); UI.log(`${player.name} drains ${drained} mana!`, 'ability'); } },
-                poison_stab: { name: 'Poison Stab', description: 'Deals regular damage and poisons the enemy for 3 turns.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage()); enemy.takeDamage(dmg); enemy.addStatus('poisoned', 3); UI.log(`${player.name} stabs with a poisoned blade for ${dmg} damage!`, 'attack'); } },
-                eviscerate: { name: 'Eviscerate', description: 'A vicious attack dealing 2x to 3x weapon damage.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 2.5); enemy.takeDamage(dmg); UI.log(`${player.name} eviscerates for a massive ${dmg} damage!`, 'attack'); } },
-                smite: { name: 'Smite', description: 'Deals 1.2x damage and heals you for 20% of damage dealt.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 1.2); enemy.takeDamage(dmg); const healed = Math.round(dmg * 0.2); player.heal(healed); UI.log(`${player.name} smites the enemy for ${dmg} damage and recovers ${healed} health.`, 'attack'); } },
+                poison_stab: { name: 'Poison Stab', description: 'Deals 2x to 3x weapon damage and poisons the enemy for 3 turns.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 2.5); enemy.takeDamage(dmg); enemy.addStatus('poisoned', 3); UI.log(`${player.name} stabs with a poisoned blade for ${dmg} damage!`, 'attack'); } },
+                eviscerate: { name: 'Eviscerate', description: 'A vicious attack dealing 2x to 3x weapon damage.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 2.8); enemy.takeDamage(dmg); UI.log(`${player.name} eviscerates for a massive ${dmg} damage!`, 'attack'); } },
+                smite: { name: 'Smite', description: 'Deals 2x to 3x damage and heals you for 20% of damage dealt.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 2.5); enemy.takeDamage(dmg); const healed = Math.round(dmg * 0.2); player.heal(healed); UI.log(`${player.name} smites the enemy for ${dmg} damage and recovers ${healed} health.`, 'attack'); } },
                 holy_light: { name: 'Holy Light', description: 'Heals you for 40% of your max HP.', execute: (player, enemy) => { const healed = Math.round(player.maxHp * 0.4); player.heal(healed); UI.log(`${player.name} is bathed in Holy Light, healing for ${healed} health.`, 'heal'); } },
-                divine_strike: { name: 'Divine Strike', description: 'Deals 1.3x damage. 25% chance to stun.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 1.3); enemy.takeDamage(dmg); UI.log(`${player.name}'s Divine Strike hits for ${dmg} damage!`, 'attack'); if (Math.random() < 0.25) { enemy.addStatus('stunned', 1); UI.log('The enemy is stunned by divine power!', 'debuff'); } } },
+                divine_strike: { name: 'Divine Strike', description: 'Deals 2x to 3x damage. 25% chance to stun.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 2.5); enemy.takeDamage(dmg); UI.log(`${player.name}'s Divine Strike hits for ${dmg} damage!`, 'attack'); if (Math.random() < 0.25) { enemy.addStatus('stunned', 1); UI.log('The enemy is stunned by divine power!', 'debuff'); } } },
                 lay_on_hands: { name: 'Lay on Hands', description: 'A powerful heal for 50% of your max HP.', execute: (player, enemy) => { const healed = Math.round(player.maxHp * 0.5); player.heal(healed); UI.log(`${player.name} uses Lay on Hands, restoring ${healed} health.`, 'heal'); } },
             },
             items: {
@@ -420,6 +420,9 @@
                 const player = gameState.player;
                 if (!player || !DOMElements.playerInfoContainer) return;
 
+                const hpDisplay = `${player.hp.toFixed(1)} / ${player.maxHp.toFixed(1)}`;
+                const manaDisplay = `${player.mana} / ${player.maxMana}`;
+                const xpDisplay = `${player.xp} / ${player.xpToNextLevel}`;
                 const playerCardHTML = `
                     <div class="bg-gray-900 rounded-lg p-3 sm:p-4 border border-gray-700 space-y-3 sm:space-y-4 relative">
                         <div id="player-damage-container" class="absolute w-full h-full top-0 left-0 pointer-events-none"></div>
@@ -431,15 +434,15 @@
                             </div>
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs sm:text-sm mb-1"><span>HP</span><span>${player.hp} / ${player.maxHp}</span></div>
+                            <div class="flex justify-between text-xs sm:text-sm mb-1"><span>HP</span><span>${hpDisplay}</span></div>
                             <div class="health-bar-container"><div class="health-bar h-3 sm:h-4" style="width: ${player.hp / player.maxHp * 100}%"></div></div>
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs sm:text-sm mb-1"><span>Mana</span><span>${player.mana} / ${player.maxMana}</span></div>
+                            <div class="flex justify-between text-xs sm:text-sm mb-1"><span>Mana</span><span>${manaDisplay}</span></div>
                             <div class="health-bar-container"><div class="mana-bar h-3 sm:h-4" style="width: ${player.mana / player.maxMana * 100}%"></div></div>
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs sm:text-sm mb-1"><span>XP</span><span>${player.xp} / ${player.xpToNextLevel}</span></div>
+                            <div class="flex justify-between text-xs sm:text-sm mb-1"><span>XP</span><span>${xpDisplay}</span></div>
                             <div class="xp-bar"><div class="xp-bar-fill" style="width: ${player.xp / player.xpToNextLevel * 100}%"></div></div>
                         </div>
                         <div id="player-status-effects" class="flex gap-2 h-6"></div>
@@ -505,7 +508,7 @@
                 DOMElements.enemyName.textContent = enemy.name;
                 DOMElements.enemyArtContainer.innerHTML = `<div class="enemy-idle">${enemy.art}</div>`;
                 DOMElements.enemyHealthBar.style.width = `${(enemy.hp / enemy.maxHp) * 100}%`;
-                DOMElements.enemyHealthBar.textContent = `${enemy.hp} / ${enemy.maxHp}`;
+                DOMElements.enemyHealthBar.textContent = `${enemy.hp.toFixed(1)} / ${enemy.maxHp.toFixed(1)}`;
                 DOMElements.enemyDescription.textContent = enemy.description;
                 this.updateStatusEffects(enemy);
             },
