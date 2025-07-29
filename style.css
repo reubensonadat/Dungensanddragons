@@ -1,0 +1,69 @@
+/* General Body and Font Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #e2e8f0;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-denim-3.png');
+        }
+        /* Main container for the game with a medieval theme */
+        .game-container {
+            font-family: 'MedievalSharp', cursive;
+            border: 4px solid #4a5568;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1), 0 0 30px rgba(253, 224, 71, 0.1) inset;
+            position: relative;
+            background-color: #1a202c;
+        }
+        /* Health and Mana Bar Styling */
+        .health-bar-container { background-color: #2d3748; border-radius: 0.5rem; overflow: hidden; border: 2px solid #4a5568; }
+        .health-bar, .mana-bar { transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out; }
+        .health-bar { background: linear-gradient(to right, #22c55e, #4ade80); }
+        .mana-bar { background: linear-gradient(to right, #3b82f6, #60a5fa); }
+        /* Button Styling and Animations */
+        .btn { transition: all 0.2s ease-in-out; box-shadow: 0 4px 6px rgba(0,0,0,0.3); position: relative; }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 10px rgba(0,0,0,0.4); }
+        .btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .btn:disabled { cursor: not-allowed; opacity: 0.5; }
+        /* Game Log Styling */
+        .log-message { border-left: 2px solid #4a5568; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Character and Enemy Art Styling */
+        .character-art { width: 100px; height: 100px; filter: drop-shadow(0 0 15px rgba(0,0,0,0.7)); transition: transform 0.3s ease-in-out; }
+        .enemy-idle { animation: idleBob 3s ease-in-out infinite; }
+        @keyframes idleBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        
+        /* Combat and Screen Shake Animations */
+        .attack-animation { animation: shake-light 0.5s; }
+        .crit-animation { animation: shake-heavy 0.6s; }
+        @keyframes shake-light { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); } 20%, 40%, 60%, 80% { transform: translateX(4px); } }
+        @keyframes shake-medium { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); } 20%, 40%, 60%, 80% { transform: translateX(8px); } }
+        @keyframes shake-heavy { 0% { transform: scale(1) rotate(0); } 25% { transform: scale(1.05) rotate(-3deg); } 75% { transform: scale(1.05) rotate(3deg); } 100% { transform: scale(1) rotate(0); } }
+
+        /* Damage Indicator Pop-up */
+        .damage-indicator { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); font-size: 1.5rem; font-weight: bold; text-shadow: 1px 1px #000; animation: floatUp 1.5s ease-out forwards; pointer-events: none; }
+        .damage-indicator.crit { color: #facc15; font-size: 2rem; }
+        .damage-indicator.heal { color: #4ade80; }
+        .damage-indicator.drain { color: #c084fc; }
+        .damage-indicator.poison { color: #a3e635; }
+        @keyframes floatUp { from { transform: translate(-50%, 0); opacity: 1; } to { transform: translate(-50%, -80px); opacity: 0; } }
+        /* XP Bar Styling */
+        .xp-bar { background-color: #2d3748; border-radius: 0.5rem; overflow: hidden; border: 1px solid #4a5568; }
+        .xp-bar-fill { background: linear-gradient(to right, #a78bfa, #c4b5fd); height: 10px; transition: width 0.5s ease-in-out; }
+        /* Class Selection Card Styling */
+        .class-card { transition: all 0.3s ease; border: 2px solid #4a5568; }
+        .class-card:hover { transform: scale(1.05); border-color: #60a5fa; }
+        /* Modal Styling */
+        .modal { display: flex; }
+        /* Turn Indicator Styling */
+        .turn-indicator { transition: all 0.5s ease-in-out; text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); border-radius: 9999px; padding: 0.25rem 1rem; }
+        .turn-indicator.player-turn { background-color: rgba(59, 130, 246, 0.3); color: #93c5fd; }
+        .turn-indicator.enemy-turn { background-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        /* Status Effect Icon */
+        .status-effect-icon { animation: pulse 2s infinite; font-size: 1.5rem; text-shadow: 0 0 5px black; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        /* Tooltip */
+        .tooltip { visibility: hidden; width: 180px; background-color: #1a202c; color: #fff; text-align: center; border-radius: 6px; padding: 8px; position: absolute; z-index: 10; bottom: 125%; left: 50%; margin-left: -90px; opacity: 0; transition: opacity 0.3s; border: 1px solid #4a5568; font-family: 'Inter', sans-serif; font-size: 0.8rem;}
+        .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #4a5568 transparent transparent transparent; }
+        .btn:hover .tooltip, .inventory-item:hover .tooltip { visibility: visible; opacity: 1; }
+        /* Inventory Tabs */
+        .tab { cursor: pointer; padding: 0.5rem 1rem; border-bottom: 2px solid transparent; }
+        .tab.active { border-color: #facc15; color: #facc15; }

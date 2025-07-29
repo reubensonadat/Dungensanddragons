@@ -3,87 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dungeon Crawler: Multiplayer & Classes Edition</title>
+    <title>Dungeon Crawler: Combined Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0d1117;
-            color: #e2e8f0;
-            background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
-        }
-        .game-container {
-            font-family: 'MedievalSharp', cursive;
-            border: 4px solid #4a5568;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1), 0 0 30px rgba(19, 123, 209, 0.2) inset;
-            position: relative;
-            background-color: #1a202c;
-        }
-        .health-bar-container { background-color: #2d3748; border-radius: 0.5rem; overflow: hidden; border: 2px solid #4a5568; }
-        .health-bar, .mana-bar { transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out; }
-        .health-bar { background: linear-gradient(to right, #22c55e, #4ade80); }
-        .mana-bar { background: linear-gradient(to right, #3b82f6, #60a5fa); }
-        .btn { transition: all 0.2s ease-in-out; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 10px rgba(0,0,0,0.4); }
-        .btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        .btn:disabled { cursor: not-allowed; opacity: 0.5; }
-        .log-message { border-left: 2px solid #4a5568; animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .character-art { width: 120px; height: 120px; filter: drop-shadow(0 0 15px rgba(0,0,0,0.7)); transition: transform 0.3s ease-in-out; }
-        .enemy-idle { animation: idleBob 3s ease-in-out infinite; }
-        @keyframes idleBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .attack-animation { animation: shake 0.5s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); } 20%, 40%, 60%, 80% { transform: translateX(8px); } }
-        .crit-animation { animation: crit-shake 0.6s; }
-        @keyframes crit-shake { 0% { transform: scale(1) rotate(0); } 25% { transform: scale(1.2) rotate(-5deg); } 75% { transform: scale(1.2) rotate(5deg); } 100% { transform: scale(1) rotate(0); } }
-        .damage-indicator { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); font-size: 1.75rem; font-weight: bold; color: #ef4444; text-shadow: 1px 1px #000; animation: floatUp 1.5s ease-out forwards; pointer-events: none; }
-        .damage-indicator.crit { color: #d63384; font-size: 2.25rem; }
-        @keyframes floatUp { from { transform: translate(-50%, 0); opacity: 1; } to { transform: translate(-50%, -80px); opacity: 0; } }
-        .xp-bar { background-color: #2d3748; border-radius: 0.5rem; overflow: hidden; border: 1px solid #4a5568; }
-        .xp-bar-fill { background: linear-gradient(to right, #6366f1, #818cf8); height: 10px; transition: width 0.5s ease-in-out; }
-        .class-card { transition: all 0.3s ease; border: 2px solid #4a5568; }
-        .class-card:hover { transform: scale(1.05); border-color: #60a5fa; }
-        .modal { display: flex; }
-        .turn-indicator { transition: all 0.5s ease-in-out; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-2 sm:p-4">
 
     <!-- Main Game Container -->
-    <div id="game-container" class="game-container bg-gray-800 rounded-lg p-4 md:p-6 w-full max-w-6xl mx-auto hidden">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-3xl md:text-4xl text-yellow-400 tracking-wider">Dungeon Crawler</h1>
-            <div id="dungeon-level-display" class="text-2xl text-gray-400">Dungeon Level: 1</div>
+    <div id="game-container" class="game-container bg-gray-800 rounded-lg p-3 sm:p-4 md:p-6 w-full max-w-7xl mx-auto hidden">
+        <!-- Top Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-4 border-b border-gray-700 pb-3 gap-2">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl text-yellow-400 tracking-wider text-center sm:text-left">Dungeon Crawler</h1>
+            <div class="flex items-center gap-3 sm:gap-4 md:gap-6 text-base sm:text-lg md:text-xl">
+                 <div id="player-gold-display" class="text-yellow-400">💰 0</div>
+                 <div id="player-potions-display" class="text-red-400">🧪 0</div>
+                 <div id="dungeon-level-display" class="text-gray-400 text-sm sm:text-base">Level: 1</div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Player Party -->
-            <div id="party-container" class="lg:col-span-1 space-y-4">
-                <!-- Player cards will be injected here -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+            <!-- Player Info -->
+            <div id="player-info-container" class="lg:col-span-1 space-y-4 order-2 lg:order-1">
+                <!-- Player card will be injected here -->
             </div>
 
             <!-- Main Combat Area -->
-            <div class="lg:col-span-2">
-                <!-- Enemy -->
-                <div class="relative text-center mb-6">
+            <div class="lg:col-span-2 order-1 lg:order-2">
+                <div id="turn-indicator-container" class="text-center mb-2 sm:mb-4 text-xl md:text-2xl font-bold"></div>
+                <div class="relative text-center mb-4 sm:mb-6">
                     <div id="enemy-damage-container" class="absolute w-full h-full top-0 left-0"></div>
-                    <h2 id="enemy-name" class="text-2xl md:text-3xl mb-2 text-red-400">Enemy</h2>
-                    <div id="enemy-art-container" class="flex justify-center mb-3 h-32 items-center"></div>
+                    <div id="enemy-status-effects" class="absolute top-0 right-0 flex gap-2 p-2"></div>
+                    <h2 id="enemy-name" class="text-xl sm:text-2xl md:text-3xl mb-2 text-red-400">Enemy</h2>
+                    <div id="enemy-art-container" class="flex justify-center mb-3 h-28 sm:h-32 items-center"></div>
                     <div class="health-bar-container max-w-md mx-auto">
-                        <div id="enemy-health-bar" class="health-bar h-6 rounded-md text-sm font-bold text-gray-900 flex items-center justify-center" style="width: 100%;"></div>
+                        <div id="enemy-health-bar" class="health-bar h-5 sm:h-6 rounded-md text-xs sm:text-sm font-bold text-gray-900 flex items-center justify-center" style="width: 100%;"></div>
                     </div>
-                    <p id="enemy-description" class="text-sm italic text-gray-400 mt-2 h-10"></p>
+                    <p id="enemy-description" class="text-xs sm:text-sm italic text-gray-400 mt-2 h-8 sm:h-10"></p>
                 </div>
 
-                <!-- Action Buttons -->
-                <div id="action-buttons" class="flex flex-wrap justify-center gap-4 mb-6">
-                    <!-- Buttons will be injected here based on class -->
-                </div>
-
-                <!-- Game Log -->
-                <div class="bg-gray-900 rounded-lg p-4 h-56 overflow-y-auto border border-gray-700" aria-live="polite">
+                <div id="action-buttons" class="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6"></div>
+                <div class="bg-gray-900 rounded-lg p-2 sm:p-4 h-48 sm:h-56 overflow-y-auto border border-gray-700" aria-live="polite">
                     <div id="game-log"></div>
                 </div>
             </div>
@@ -91,453 +52,45 @@
     </div>
 
     <!-- Start Screen -->
-    <div id="start-screen" class="text-center p-8">
-        <h1 class="text-5xl text-yellow-400 mb-8" style="font-family: 'MedievalSharp', cursive;">Dungeon Crawler</h1>
-        <button id="single-player-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-2xl mb-4">Single Player</button>
-        <p class="text-gray-400">Multiplayer Coming Soon!</p>
+    <div id="start-screen" class="text-center p-4 sm:p-8">
+        <h1 class="text-4xl sm:text-5xl text-yellow-400 mb-6 sm:mb-8" style="font-family: 'MedievalSharp', cursive;">Dungeon Crawler</h1>
+        <div id="auth-status" class="text-gray-500 mb-4 text-xs">Connecting...</div>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button id="continue-btn" class="btn bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-lg text-lg sm:text-2xl hidden">Continue Adventure</button>
+            <button id="start-game-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-lg text-lg sm:text-2xl">Begin New Adventure</button>
+        </div>
     </div>
 
     <!-- Class Selection Screen -->
-    <div id="class-selection-screen" class="modal hidden justify-center items-center fixed inset-0 bg-black bg-opacity-75">
-        <div class="bg-gray-800 p-8 rounded-lg shadow-2xl text-center">
-            <h2 class="text-4xl text-yellow-400 mb-6" style="font-family: 'MedievalSharp', cursive;">Choose Your Class</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Warrior -->
-                <div id="select-warrior" class="class-card bg-gray-700 p-6 rounded-lg cursor-pointer">
-                    <h3 class="text-2xl text-red-400 mb-2">Warrior</h3>
-                    <p class="text-gray-300">A master of arms with high health and defense. Protects allies with their shield.</p>
-                </div>
-                <!-- Mage -->
-                <div id="select-mage" class="class-card bg-gray-700 p-6 rounded-lg cursor-pointer">
-                    <h3 class="text-2xl text-blue-400 mb-2">Mage</h3>
-                    <p class="text-gray-300">A powerful sorcerer who wields devastating elemental magic from afar.</p>
-                </div>
-                <!-- Rogue -->
-                <div id="select-rogue" class="class-card bg-gray-700 p-6 rounded-lg cursor-pointer">
-                    <h3 class="text-2xl text-green-400 mb-2">Rogue</h3>
-                    <p class="text-gray-300">A swift and deadly assassin who strikes from the shadows and exploits weaknesses.</p>
-                </div>
+    <div id="class-selection-screen" class="modal hidden justify-center items-center fixed inset-0 bg-black bg-opacity-75 z-50 p-4">
+        <div class="bg-gray-800 p-6 sm:p-8 rounded-lg shadow-2xl text-center w-full max-w-5xl">
+            <h2 class="text-3xl sm:text-4xl text-yellow-400 mb-6" style="font-family: 'MedievalSharp', cursive;">Choose Your Class</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
+                <div id="select-warrior" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer"><h3 class="text-xl sm:text-2xl text-red-400 mb-2">Warrior</h3><p class="text-gray-300 text-sm sm:text-base">A master of arms with high health and defense.</p></div>
+                <div id="select-mage" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer"><h3 class="text-xl sm:text-2xl text-blue-400 mb-2">Mage</h3><p class="text-gray-300 text-sm sm:text-base">A powerful sorcerer who wields devastating elemental magic.</p></div>
+                <div id="select-rogue" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer"><h3 class="text-xl sm:text-2xl text-green-400 mb-2">Rogue</h3><p class="text-gray-300 text-sm sm:text-base">A swift and deadly assassin who strikes from the shadows.</p></div>
+                <div id="select-cleric" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer"><h3 class="text-xl sm:text-2xl text-yellow-200 mb-2">Cleric</h3><p class="text-gray-300 text-sm sm:text-base">A devout warrior who uses divine power to smite foes and heal.</p></div>
+                <div id="select-paladin" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer lg:col-span-2 xl:col-span-1"><h3 class="text-xl sm:text-2xl text-indigo-300 mb-2">Paladin</h3><p class="text-gray-300 text-sm sm:text-base">A holy knight blending martial prowess with divine blessings.</p></div>
             </div>
         </div>
     </div>
     
     <!-- Game Over Screen -->
-    <div id="game-over-screen" class="modal hidden justify-center items-center fixed inset-0 bg-black bg-opacity-75">
-        <div class="text-center bg-gray-800 p-10 rounded-lg">
-             <p id="game-over-message" class="text-4xl mb-6"></p>
-             <button id="new-game-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-2xl">Play Again</button>
+    <div id="game-over-screen" class="modal hidden justify-center items-center fixed inset-0 bg-black bg-opacity-75 z-50 p-4">
+        <div class="text-center bg-gray-800 p-6 sm:p-10 rounded-lg shadow-2xl">
+             <p id="game-over-message" class="text-3xl sm:text-5xl mb-6"></p>
+             <div id="game-over-stats" class="text-base sm:text-lg text-gray-300 mb-6 space-y-2"></div>
+             <button id="new-game-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 sm:px-8 rounded-lg text-xl sm:text-2xl">Return to Main Menu</button>
         </div>
     </div>
 
+    <!-- Event Screen (Shop, Treasure, etc.) -->
+    <div id="event-screen" class="modal hidden justify-center items-center fixed inset-0 bg-black bg-opacity-75 z-50 p-4">
+        <div id="event-content" class="bg-gray-800 p-6 sm:p-8 rounded-lg shadow-2xl w-full max-w-3xl game-container overflow-y-auto max-h-[90vh]">
+            <!-- Content for shop or treasure is injected here -->
+        </div>
+    </div>
 
-    <script type="module">
-        // --- DOM Elements ---
-        const gameContainer = document.getElementById('game-container');
-        const startScreen = document.getElementById('start-screen');
-        const classSelectionScreen = document.getElementById('class-selection-screen');
-        const gameOverScreen = document.getElementById('game-over-screen');
-        const partyContainer = document.getElementById('party-container');
-        const enemyName = document.getElementById('enemy-name');
-        const enemyArtContainer = document.getElementById('enemy-art-container');
-        const enemyHealthBar = document.getElementById('enemy-health-bar');
-        const enemyDescription = document.getElementById('enemy-description');
-        const actionButtonsContainer = document.getElementById('action-buttons');
-        const gameLog = document.getElementById('game-log');
-        const dungeonLevelDisplay = document.getElementById('dungeon-level-display');
-        const gameOverMessage = document.getElementById('game-over-message');
-        const enemyDamageContainer = document.getElementById('enemy-damage-container');
-
-        // --- Buttons ---
-        document.getElementById('single-player-btn').addEventListener('click', () => {
-            startScreen.style.display = 'none';
-            classSelectionScreen.style.display = 'flex';
-        });
-        document.getElementById('select-warrior').addEventListener('click', () => startGame('warrior'));
-        document.getElementById('select-mage').addEventListener('click', () => startGame('mage'));
-        document.getElementById('select-rogue').addEventListener('click', () => startGame('rogue'));
-        document.getElementById('new-game-btn').addEventListener('click', () => {
-            gameOverScreen.style.display = 'none';
-            classSelectionScreen.style.display = 'none';
-            gameContainer.style.display = 'none';
-            startScreen.style.display = 'block';
-        });
-
-        // --- Audio Engine ---
-        const sounds = {
-            hit: new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination(),
-            crit: new Tone.Synth({ oscillator: { type: "triangle8" }, envelope: { attack: 0.01, decay: 0.4, sustain: 0, release: 0.1 } }).toDestination(),
-            potion: new Tone.MembraneSynth().toDestination(),
-            levelUp: new Tone.Synth({ oscillator: {type: 'sawtooth'}, envelope: {attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5}}).toDestination(),
-            fireball: new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.2 } }).toDestination(),
-            lose: new Tone.Synth({ oscillator: { type: "fmsquare", modulationType: "sawtooth", modulationIndex: 3, harmonicity: 3.4 }, envelope: { attack: 0.01, decay: 1, sustain: 0, release: 0.2 } }).toDestination(),
-            win: new Tone.Synth().toDestination(),
-        };
-        
-        function playSound(sound, note = null, duration = '8n') {
-            if (Tone.context.state !== 'running') {
-                Tone.start();
-            }
-            if (sounds[sound]) {
-                if (sounds[sound] instanceof Tone.Synth || sounds[sound] instanceof Tone.NoiseSynth || sounds[sound] instanceof Tone.MembraneSynth) {
-                    sounds[sound].triggerAttackRelease(note, duration);
-                } else {
-                    sounds[sound].start();
-                }
-            }
-        }
-
-        // --- Game Data & State ---
-        const ENEMIES_DATA = {
-            goblin: { name: "Goblin", baseHealth: 30, baseDamage: 5, xp: 10, description: "A small, wicked creature.", art: `<svg class="character-art" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a10 10 0 00-9.53 7.12L2 12l.47 2.88A10 10 0 1012 2zm0 3c.83 0 1.5.67 1.5 1.5S12.83 8 12 8s-1.5-.67-1.5-1.5S11.17 5 12 5zm-5 6h10v2H7v-2zm1 4h8v2H8v-2z" fill="#e53e3e"/></svg>` },
-            skeleton: { name: "Skeleton", baseHealth: 40, baseDamage: 8, xp: 15, description: "A rattling warrior of bone.", art: `<svg class="character-art" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm2 0h-2v-2h2v2zm2 0h-2v-2h2v2zm-2-4h-2V9h2v3z" fill="#a0aec0"/></svg>` },
-            orc: { name: "Orc Grunt", baseHealth: 60, baseDamage: 12, xp: 25, description: "A brutish foe with a foul temper.", art: `<svg class="character-art" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zm4 0c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zm-4-7C8.34 9.5 7 8.16 7 6.5S8.34 3.5 10 3.5s3 1.34 3 3-1.34 3-3 3z" fill="#38a169"/></svg>` },
-            darkMage: { name: "Dark Mage", baseHealth: 50, baseDamage: 18, xp: 30, description: "Wields forbidden, powerful magic.", art: `<svg class="character-art" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l-4 8 4 8 4-8-4-8zm0 11.5c-1.93 0-3.5 1.57-3.5 3.5S10.07 21 12 21s3.5-1.57 3.5-3.5-1.57-3.5-3.5-3.5z" fill="#9f7aea"/></svg>` },
-            abyssDragon: { name: "Abyss Dragon", baseHealth: 250, baseDamage: 25, xp: 0, isBoss: true, description: "The final horror of the dungeon!", art: `<svg class="character-art" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.59 4.59C11.16 5.16 11.16 6.09 10.59 6.66L5.25 12l5.34 5.34c.57.57.57 1.5 0 2.07-.57.57-1.5.57-2.07 0l-6.37-6.36c-.57-.57-.57-1.5 0-2.07l6.37-6.36c.57-.57 1.5-.57 2.07 0zM21 12l-6.36 6.36c-.57.57-1.5.57-2.07 0-.57-.57-.57-1.5 0-2.07L17.91 12l-5.34-5.34c-.57-.57-.57-1.5 0-2.07.57-.57 1.5-.57 2.07 0L21 12z" fill="#dd6b20"/></svg>` }
-        };
-        let player, currentEnemy, dungeonLevel, enemiesDefeated, isPlayerTurn;
-
-        // --- Game Classes ---
-        class Character {
-            constructor(name, health, damage) {
-                this.name = name;
-                this.maxHealth = health;
-                this.health = health;
-                this.damage = damage;
-            }
-
-            takeDamage(amount) {
-                this.health = Math.max(0, this.health - amount);
-            }
-        }
-
-        class Player extends Character {
-            constructor(name, health, playerClass) {
-                super(name, health, 0);
-                this.playerClass = playerClass;
-                this.level = 1;
-                this.xp = 0;
-                this.xpToNextLevel = 50;
-                this.potions = 3;
-            }
-
-            gainXP(amount) {
-                this.xp += amount;
-                logMessage(`You gained ${amount} XP!`, 'text-indigo-400');
-                if (this.xp >= this.xpToNextLevel) {
-                    this.levelUp();
-                }
-            }
-
-            levelUp() {
-                this.level++;
-                this.xp = this.xp - this.xpToNextLevel;
-                this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.5);
-                this.maxHealth += 20;
-                this.health = this.maxHealth;
-                this.damage += 3;
-                logMessage(`LEVEL UP! You are now level ${this.level}!`, 'text-yellow-300 font-bold');
-                playSound('levelUp', 'C5');
-            }
-        }
-        
-        class Warrior extends Player {
-            constructor() {
-                super("Warrior", 120, 'warrior');
-                this.damage = 12;
-                this.isGuarding = false;
-            }
-            specialAbility() {
-                this.isGuarding = true;
-                logMessage('You raise your shield, bracing for the next attack!', 'text-cyan-400');
-            }
-            takeDamage(amount) {
-                if (this.isGuarding) {
-                    amount = Math.floor(amount / 2);
-                    logMessage('Your shield absorbs much of the blow!', 'text-cyan-500');
-                    this.isGuarding = false;
-                }
-                super.takeDamage(amount);
-            }
-        }
-
-        class Mage extends Player {
-            constructor() {
-                super("Mage", 80, 'mage');
-                this.damage = 8;
-                this.mana = 100;
-                this.maxMana = 100;
-            }
-            specialAbility() {
-                if (this.mana >= 40) {
-                    this.mana -= 40;
-                    const damage = calculateDamage(this.damage * 3);
-                    currentEnemy.takeDamage(damage);
-                    logMessage(`You unleash a massive FIREBALL for ${damage} damage!`, 'text-orange-500');
-                    playSound('fireball');
-                    showDamageIndicator('enemy', damage, true);
-                    return true;
-                } else {
-                    logMessage('Not enough mana for Fireball!', 'text-gray-400');
-                    return false;
-                }
-            }
-        }
-        
-        class Rogue extends Player {
-             constructor() {
-                super("Rogue", 90, 'rogue');
-                this.damage = 10;
-            }
-            specialAbility() {
-                const isCrit = Math.random() < 0.75;
-                const damageMultiplier = isCrit ? 2.5 : 1;
-                const damage = calculateDamage(this.damage * damageMultiplier);
-                currentEnemy.takeDamage(damage);
-                logMessage(`You strike from the shadows for ${damage} damage!`, isCrit ? 'text-yellow-400 font-bold' : 'text-green-400');
-                showDamageIndicator('enemy', damage, isCrit);
-                if (isCrit) playSound('crit', 'C5');
-            }
-        }
-
-        // --- Main Game Functions ---
-        function startGame(playerClass) {
-            classSelectionScreen.style.display = 'none';
-            gameContainer.style.display = 'block';
-
-            switch(playerClass) {
-                case 'warrior': player = new Warrior(); break;
-                case 'mage': player = new Mage(); break;
-                case 'rogue': player = new Rogue(); break;
-            }
-            
-            dungeonLevel = 1;
-            enemiesDefeated = 0;
-            isPlayerTurn = true;
-            gameLog.innerHTML = '';
-            logMessage(`You enter the dungeon as a ${player.playerClass}.`, 'text-yellow-400');
-            
-            createPlayerCard();
-            createActionButtons();
-            spawnNewEnemy();
-            updateUI();
-        }
-
-        function createPlayerCard() {
-            const playerCardContainer = document.createElement('div');
-            playerCardContainer.id = `player-card-${player.name}`;
-            playerCardContainer.className = "relative p-4 bg-gray-900 rounded-lg border-2 border-transparent";
-            
-            let cardHTML = `
-                <div id="player-damage-container" class="absolute w-full h-full top-0 left-0"></div>
-                <div class="flex justify-between items-center">
-                    <h3 class="text-xl">${player.name} (${player.playerClass})</h3>
-                    <div class="text-md">Lvl: <span id="player-level">1</span></div>
-                </div>
-                <div class="health-bar-container mt-2">
-                    <div id="player-health-bar" class="health-bar h-5 flex items-center justify-center text-xs font-bold"></div>
-                </div>
-            `;
-            if (player.playerClass === 'mage') {
-                cardHTML += `
-                <div class="health-bar-container mt-1">
-                    <div id="player-mana-bar" class="mana-bar h-4 flex items-center justify-center text-xs font-bold"></div>
-                </div>`;
-            }
-            cardHTML += `
-                <div class="xp-bar mt-2">
-                    <div id="player-xp-bar" class="xp-bar-fill"></div>
-                </div>
-                <div class="mt-2">Potions: <span id="potion-count"></span></div>
-            `;
-            playerCardContainer.innerHTML = cardHTML;
-            partyContainer.innerHTML = '';
-            partyContainer.appendChild(playerCardContainer);
-        }
-        
-        function createActionButtons() {
-            let buttons = `
-                <button id="attack-btn" class="btn bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg text-xl">Attack</button>
-            `;
-            switch(player.playerClass) {
-                case 'warrior':
-                    buttons += `<button id="special-btn" class="btn bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-lg text-xl">Shield Wall</button>`;
-                    break;
-                case 'mage':
-                    buttons += `<button id="special-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-xl">Fireball</button>`;
-                    break;
-                case 'rogue':
-                    buttons += `<button id="special-btn" class="btn bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-xl">Shadow Strike</button>`;
-                    break;
-            }
-            buttons += `<button id="potion-btn" class="btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg text-xl">Potion</button>`;
-            actionButtonsContainer.innerHTML = buttons;
-
-            document.getElementById('attack-btn').addEventListener('click', () => playerTurn('attack'));
-            document.getElementById('special-btn').addEventListener('click', () => playerTurn('special'));
-            document.getElementById('potion-btn').addEventListener('click', () => playerTurn('potion'));
-        }
-
-        function playerTurn(action) {
-            if (!isPlayerTurn || player.health <= 0) return;
-            isPlayerTurn = false;
-            let enemyTurnDelayed = true;
-
-            switch (action) {
-                case 'attack':
-                    const damage = calculateDamage(player.damage);
-                    currentEnemy.takeDamage(damage);
-                    logMessage(`You attack for ${damage} damage.`, 'text-green-400');
-                    playSound('hit', 'C4');
-                    showDamageIndicator('enemy', damage);
-                    enemyArtContainer.querySelector('svg')?.classList.add('attack-animation');
-                    break;
-                case 'special':
-                    if (player.playerClass === 'mage') {
-                        if (!player.specialAbility()) { // If not enough mana
-                             enemyTurnDelayed = false; // Don't delay enemy turn
-                             isPlayerTurn = true;
-                        }
-                    } else {
-                         player.specialAbility();
-                    }
-                    enemyArtContainer.querySelector('svg')?.classList.add('crit-animation');
-                    break;
-                case 'potion':
-                    if (player.potions > 0) {
-                        const healAmount = Math.floor(player.maxHealth * 0.4);
-                        player.health = Math.min(player.maxHealth, player.health + healAmount);
-                        player.potions--;
-                        logMessage(`You drink a potion, recovering ${healAmount} health.`, 'text-blue-400');
-                        playSound('potion', 'C4');
-                    } else {
-                        logMessage("You're out of potions!", 'text-gray-400');
-                        enemyTurnDelayed = false;
-                        isPlayerTurn = true;
-                    }
-                    break;
-            }
-            
-            setTimeout(() => enemyArtContainer.querySelector('svg')?.classList.remove('attack-animation', 'crit-animation'), 600);
-            updateUI();
-            
-            if (currentEnemy.health <= 0) {
-                handleEnemyDefeated();
-            } else if (enemyTurnDelayed) {
-                setTimeout(enemyTurn, 1200);
-            }
-        }
-        
-        function handleEnemyDefeated() {
-            logMessage(`You have defeated the ${currentEnemy.name}!`, "text-green-200 font-bold");
-            player.gainXP(currentEnemy.xp);
-            enemiesDefeated++;
-            
-            // Logic for level progression, potion drops etc.
-            if (enemiesDefeated % 4 === 0) {
-                dungeonLevel++;
-                logMessage(`You delve deeper... You've reached Dungeon Level ${dungeonLevel}!`, 'text-cyan-400');
-            }
-            if (Math.random() > 0.65) { // 35% chance for potion
-                player.potions++;
-                logMessage(`The ${currentEnemy.name} dropped a health potion!`, 'text-blue-400');
-            }
-
-            setTimeout(() => {
-                spawnNewEnemy();
-                isPlayerTurn = true;
-                updateUI();
-            }, 1000);
-        }
-
-        function enemyTurn() {
-            if (currentEnemy.health <= 0 || player.health <= 0) return;
-            const damage = calculateDamage(currentEnemy.damage);
-            player.takeDamage(damage);
-            logMessage(`The ${currentEnemy.name} attacks for ${damage} damage.`, 'text-red-400');
-            playSound('hit', 'G3');
-            showDamageIndicator('player', damage);
-            
-            document.getElementById(`player-card-${player.name}`).classList.add('attack-animation');
-            setTimeout(() => document.getElementById(`player-card-${player.name}`).classList.remove('attack-animation'), 500);
-            
-            if (player.health <= 0) {
-                endGame(false);
-            } else {
-                isPlayerTurn = true;
-            }
-            updateUI();
-        }
-
-        function updateUI() {
-            // Player Card
-            const playerHealthBar = document.getElementById('player-health-bar');
-            const playerHealthPercent = (player.health / player.maxHealth) * 100;
-            playerHealthBar.style.width = `${playerHealthPercent}%`;
-            playerHealthBar.textContent = `${player.health}/${player.maxHealth}`;
-            playerHealthBar.style.backgroundColor = playerHealthPercent > 60 ? '#22c55e' : playerHealthPercent > 30 ? '#f59e0b' : '#ef4444';
-            document.getElementById('player-level').textContent = player.level;
-            document.getElementById('player-xp-bar').style.width = `${(player.xp / player.xpToNextLevel) * 100}%`;
-            document.getElementById('potion-count').textContent = player.potions;
-
-            if (player.playerClass === 'mage') {
-                const playerManaBar = document.getElementById('player-mana-bar');
-                playerManaBar.style.width = `${(player.mana / player.maxMana) * 100}%`;
-                playerManaBar.textContent = `${player.mana}/${player.maxMana}`;
-            }
-
-            // Enemy UI
-            const enemyHealthPercent = (currentEnemy.health / currentEnemy.maxHealth) * 100;
-            enemyHealthBar.style.width = `${enemyHealthPercent}%`;
-            enemyHealthBar.textContent = `${currentEnemy.health}/${currentEnemy.maxHealth}`;
-            enemyHealthBar.style.backgroundColor = enemyHealthPercent > 60 ? '#22c55e' : enemyHealthPercent > 30 ? '#f59e0b' : '#ef4444';
-            enemyName.textContent = currentEnemy.name;
-            enemyDescription.textContent = currentEnemy.description;
-            enemyArtContainer.innerHTML = currentEnemy.art || '';
-            enemyArtContainer.querySelector('svg')?.classList.add('enemy-idle');
-
-            // General UI
-            dungeonLevelDisplay.textContent = `Dungeon Level: ${dungeonLevel}`;
-            document.querySelectorAll('#action-buttons button').forEach(btn => btn.disabled = !isPlayerTurn);
-            document.getElementById('potion-btn').disabled = player.potions <= 0 || !isPlayerTurn;
-        }
-
-        // --- Utility Functions ---
-        function logMessage(message, colorClass = 'text-gray-300') {
-            const p = document.createElement('p');
-            p.innerHTML = message;
-            p.className = `log-message p-2 ${colorClass}`;
-            gameLog.appendChild(p);
-            gameLog.scrollTop = gameLog.scrollHeight;
-        }
-        function calculateDamage(base) { return Math.floor(base * (Math.random() * 0.4 + 0.8)); }
-        function showDamageIndicator(target, damage, isCrit = false) {
-            const container = target === 'player' ? document.getElementById('player-damage-container') : enemyDamageContainer;
-            const indicator = document.createElement('div');
-            indicator.textContent = damage;
-            indicator.className = 'damage-indicator';
-            if (isCrit) indicator.classList.add('crit');
-            container.appendChild(indicator);
-            setTimeout(() => indicator.remove(), 1500);
-        }
-        function spawnNewEnemy() {
-            const availableEnemies = Object.values(ENEMIES_DATA).filter(e => !e.isBoss);
-            const enemyData = availableEnemies[Math.floor(Math.random() * availableEnemies.length)];
-            
-            const health = Math.floor(enemyData.baseHealth * (1 + (dungeonLevel - 1) * 0.25));
-            const damage = Math.floor(enemyData.baseDamage * (1 + (dungeonLevel - 1) * 0.20));
-
-            currentEnemy = new Character(enemyData.name, health, damage);
-            currentEnemy.xp = enemyData.xp;
-            currentEnemy.description = enemyData.description;
-            currentEnemy.art = enemyData.art;
-        }
-        function endGame(playerWon) {
-            gameOverScreen.style.display = 'flex';
-            gameOverMessage.textContent = playerWon ? "VICTORY!" : "DEFEAT";
-            gameOverMessage.className = playerWon ? 'text-4xl mb-6 text-green-400' : 'text-4xl mb-6 text-red-500';
-            playSound(playerWon ? 'win' : 'lose', playerWon ? 'C5' : 'C3', '1s');
-        }
-
-    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
