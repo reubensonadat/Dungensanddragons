@@ -18,9 +18,9 @@
         </div>
         <div id="start-screen">
             <h1>NEON SNAKE</h1>
-            <p>Use Arrow Keys or WASD to control</p>
+            <p>Use Arrow Keys or WASD to control.</p>
+            <p>On mobile, swipe on the screen to change direction.</p>
             <p>Collect food and avoid walls!</p>
-            <p>On mobile, use the on-screen controls.</p>
             <button id="start-button">START GAME</button>
             <div class="powerup-info">
                 <div class="powerup-item"><span class="power-dot speed"></span> Speed Boost</div>
@@ -32,36 +32,6 @@
             <h1>GAME OVER</h1>
             <p id="final-score"></p>
             <button id="restart-button">PLAY AGAIN</button>
-        </div>
-
-        <!-- Mobile Controls -->
-        <div id="mobile-controls">
-            <button id="up-button" class="mobile-button">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="12 19 12 5"></polyline>
-                    <polyline points="5 12 12 5 19 12"></polyline>
-                </svg>
-            </button>
-            <div class="horizontal-buttons">
-                <button id="left-button" class="mobile-button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="19 12 5 12"></polyline>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
-                </button>
-                <button id="right-button" class="mobile-button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="5 12 19 12"></polyline>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                </button>
-            </div>
-            <button id="down-button" class="mobile-button">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="12 5 12 19"></polyline>
-                    <polyline points="19 12 12 19 5 12"></polyline>
-                </svg>
-            </button>
         </div>
     </div>
     <script src="snake.js"></script>

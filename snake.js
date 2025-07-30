@@ -10,14 +10,6 @@ const highScoreEl = document.getElementById('high-score');
 const levelEl = document.getElementById('level');
 const finalScoreEl = document.getElementById('final-score');
 
-// New: Mobile control elements
-const mobileControls = document.getElementById('mobile-controls');
-const upButton = document.getElementById('up-button');
-const downButton = document.getElementById('down-button');
-const leftButton = document.getElementById('left-button');
-const rightButton = document.getElementById('right-button');
-
-
 // Game variables
 let gridSize = 20;
 let snake = [];
@@ -27,7 +19,7 @@ let direction = 'right';
 let nextDirection = 'right';
 let score = 0;
 let highScore = localStorage.getItem('snakeHighScore') || 0;
-let gameSpeed = 150; // Initial slower speed for better control
+let gameSpeed = 200; // Initial slower speed for better control (increased from 150)
 let gameInterval;
 let gameOver = false;
 let gameRunning = false;
@@ -37,10 +29,17 @@ let shieldTimer = 0;
 let speedBoostActive = false;
 let speedBoostTimer = 0;
 
+// New: Touch variables for swipe detection
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+const minSwipeDistance = 30; // Minimum distance for a swipe to be registered
+
 // Function to set canvas size responsively
 function setCanvasSize() {
-    // Determine the smaller dimension of the window
-    const size = Math.min(window.innerWidth, window.innerHeight) * 0.8; // 80% of the smaller dimension
+    // Determine the smaller dimension of the window, use a larger percentage
+    const size = Math.min(window.innerWidth, window.innerHeight) * 0.9; // 90% of the smaller dimension
     canvas.width = size - (size % gridSize); // Ensure canvas width is a multiple of gridSize
     canvas.height = size - (size % gridSize); // Ensure canvas height is a multiple of gridSize
     // Adjust background-size for grid if canvas size changes
@@ -64,7 +63,7 @@ function init() {
     direction = 'right';
     nextDirection = 'right';
     score = 0;
-    gameSpeed = 150; // Reset to initial speed
+    gameSpeed = 200; // Reset to initial speed
     level = 1;
     shieldActive = false;
     shieldTimer = 0;
@@ -393,7 +392,7 @@ function startGame() {
     gameOver = false;
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
-    mobileControls.classList.add('active'); // Show mobile controls
+    // mobileControls.classList.add('active'); // Removed: No longer using on-screen buttons
     
     clearInterval(gameInterval);
     gameInterval = setInterval(gameLoop, gameSpeed);
@@ -412,7 +411,7 @@ function endGame() {
     
     finalScoreEl.textContent = `FINAL SCORE: ${score}`;
     gameOverScreen.style.display = 'flex';
-    mobileControls.classList.remove('active'); // Hide mobile controls
+    // mobileControls.classList.remove('active'); // Removed: No longer using on-screen buttons
     playSound('gameOver');
 }
 
@@ -448,31 +447,47 @@ function playSound(sound) {
 // Event listeners for Keyboard
 window.addEventListener('keydown', handleKeyDown);
 
-// New: Event Listeners for Mobile Controls (touch and mouse down/up for broader compatibility)
-upButton.addEventListener('touchstart', (e) => { e.preventDefault(); if (direction !== 'down') nextDirection = 'up'; });
-upButton.addEventListener('touchend', (e) => { e.preventDefault(); });
-upButton.addEventListener('mousedown', () => { if (direction !== 'down') nextDirection = 'up'; });
-upButton.addEventListener('mouseup', () => {});
-upButton.addEventListener('mouseleave', () => {});
+// New: Touch event listeners for swipe controls
+canvas.addEventListener('touchstart', e => {
+    if (!gameRunning) return;
+    e.preventDefault(); // Prevent scrolling/zooming
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+}, { passive: false }); // Use passive: false to allow preventDefault
 
+canvas.addEventListener('touchmove', e => {
+    if (!gameRunning) return;
+    e.preventDefault(); // Prevent scrolling/zooming during swipe
+}, { passive: false });
 
-downButton.addEventListener('touchstart', (e) => { e.preventDefault(); if (direction !== 'up') nextDirection = 'down'; });
-downButton.addEventListener('touchend', (e) => { e.preventDefault(); });
-downButton.addEventListener('mousedown', () => { if (direction !== 'up') nextDirection = 'down'; });
-downButton.addEventListener('mouseup', () => {});
-downButton.addEventListener('mouseleave', () => {});
+canvas.addEventListener('touchend', e => {
+    if (!gameRunning) return;
+    touchEndX = e.changedTouches[0].clientX;
+    touchEndY = e.changedTouches[0].clientY;
+    
+    const dx = touchEndX - touchStartX;
+    const dy = touchEndY - touchStartY;
 
-leftButton.addEventListener('touchstart', (e) => { e.preventDefault(); if (direction !== 'right') nextDirection = 'left'; });
-leftButton.addEventListener('touchend', (e) => { e.preventDefault(); });
-leftButton.addEventListener('mousedown', () => { if (direction !== 'right') nextDirection = 'left'; });
-leftButton.addEventListener('mouseup', () => {});
-leftButton.addEventListener('mouseleave', () => {});
-
-rightButton.addEventListener('touchstart', (e) => { e.preventDefault(); if (direction !== 'left') nextDirection = 'right'; });
-rightButton.addEventListener('touchend', (e) => { e.preventDefault(); });
-rightButton.addEventListener('mousedown', () => { if (direction !== 'left') nextDirection = 'right'; });
-rightButton.addEventListener('mouseup', () => {});
-rightButton.addEventListener('mouseleave', () => {});
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > minSwipeDistance) {
+        // Horizontal swipe
+        if (dx > 0) {
+            // Swipe right
+            if (direction !== 'left') nextDirection = 'right';
+        } else {
+            // Swipe left
+            if (direction !== 'right') nextDirection = 'left';
+        }
+    } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > minSwipeDistance) {
+        // Vertical swipe
+        if (dy > 0) {
+            // Swipe down
+            if (direction !== 'up') nextDirection = 'down';
+        } else {
+            // Swipe up
+            if (direction !== 'down') nextDirection = 'up';
+        }
+    }
+});
 
 
 startButton.addEventListener('click', startGame);

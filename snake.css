@@ -19,12 +19,12 @@ body {
     box-shadow: 0 0 20px #00f7ff, 0 0 40px rgba(0, 247, 255, 0.3);
     border-radius: 5px;
     overflow: hidden;
-    /* Max width for larger screens, will be overridden by JS for canvas */
-    max-width: 600px;
-    max-height: 600px;
-    width: 90vw; /* Responsive width */
-    height: 90vw; /* Keep aspect ratio for game container */
-    display: flex; /* To center canvas within container if it's smaller */
+    /* Adjusted for larger canvas, will be set by JS */
+    width: 95vw; /* Use a larger percentage of viewport width */
+    height: 95vh; /* Use a larger percentage of viewport height */
+    max-width: 800px; /* Optional: Set a max width for very large screens */
+    max-height: 800px; /* Optional: Set a max height for very large screens */
+    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -135,59 +135,3 @@ button:hover {
 .speed { background: linear-gradient(145deg, #ff00cc, #ff0066); box-shadow: 0 0 8px #ff0066; }
 .shrink { background: linear-gradient(145deg, #00ffcc, #00ccff); box-shadow: 0 0 8px #00ccff; }
 .shield { background: linear-gradient(145deg, #ccff00, #ffff00); box-shadow: 0 0 8px #ffff00; }
-
-/* Mobile Controls Styling */
-#mobile-controls {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    z-index: 5; /* Below start/game over screens, above canvas */
-    pointer-events: none; /* Allow clicks to pass through by default */
-}
-
-#mobile-controls.active {
-    pointer-events: auto; /* Enable clicks when game is running */
-}
-
-.horizontal-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.mobile-button {
-    width: 70px; /* Larger touch targets */
-    height: 70px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2em;
-    border: 2px solid #00f7ff;
-    color: #00f7ff;
-    background-color: rgba(0, 247, 255, 0.1);
-    box-shadow: 0 0 10px #00f7ff;
-    transition: background-color 0.1s, transform 0.1s;
-}
-
-.mobile-button svg {
-    width: 36px; /* Larger SVG icons */
-    height: 36px;
-}
-
-.mobile-button:active {
-    background-color: #00f7ff;
-    color: #0a0a2a;
-    transform: scale(0.95);
-}
-
-/* Hide mobile controls on larger screens */
-@media (min-width: 768px) {
-    #mobile-controls {
-        display: none;
-    }
-}
