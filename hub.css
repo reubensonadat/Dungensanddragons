@@ -13,6 +13,7 @@ body {
     height: 200px;
     text-decoration: none;
     color: white;
+    margin-left: 5%;
 }
 
 .game-card:hover {
