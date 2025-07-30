@@ -10,6 +10,13 @@ const livesEl = document.getElementById('lives');
 const highScoreEl = document.getElementById('high-score');
 const finalScoreEl = document.getElementById('final-score');
 
+// New: Mobile control elements
+const mobileControls = document.getElementById('mobile-controls');
+const rotateLeftButton = document.getElementById('rotate-left-button');
+const rotateRightButton = document.getElementById('rotate-right-button');
+const thrustButton = document.getElementById('thrust-button');
+const shootButton = document.getElementById('shoot-button');
+
 canvas.width = window.innerWidth * 0.9;
 canvas.height = window.innerHeight * 0.9;
 
@@ -19,9 +26,19 @@ let highScore = localStorage.getItem('asteroidHighScore') || 0;
 let gameOver = false;
 let gameRunning = false;
 
+// New: Base asteroid speed and spawn interval
+let baseAsteroidSpeed = 1; // Initial speed
+let asteroidSpawnInterval = 1500; // Milliseconds
+let lastAsteroidSpawnTime = 0;
+
 const keys = {
     w: false, a: false, s: false, d: false,
-    ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false
+    ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false,
+    // New: Mobile control states
+    mobileRotateLeft: false,
+    mobileRotateRight: false,
+    mobileThrust: false,
+    mobileShoot: false
 };
 
 const player = {
@@ -71,10 +88,12 @@ const player = {
         ctx.restore();
     },
     update() {
-        if (keys.a || keys.ArrowLeft) this.rotation -= 0.05;
-        if (keys.d || keys.ArrowRight) this.rotation += 0.05;
+        // Combined keyboard and mobile controls for rotation
+        if (keys.a || keys.ArrowLeft || keys.mobileRotateLeft) this.rotation -= 0.05;
+        if (keys.d || keys.ArrowRight || keys.mobileRotateRight) this.rotation += 0.05;
 
-        if (keys.w || keys.ArrowUp) {
+        // Combined keyboard and mobile controls for thrust
+        if (keys.w || keys.ArrowUp || keys.mobileThrust) {
             this.velX += Math.sin(this.rotation) * 0.1;
             this.velY -= Math.cos(this.rotation) * 0.1;
             this.isThrusting = true;
@@ -131,7 +150,8 @@ class Asteroid {
         this.x = x || Math.random() * canvas.width;
         this.y = y || Math.random() * canvas.height;
         this.radius = radius || 50;
-        this.speed = Math.random() * 2 + 1;
+        // New: Use baseAsteroidSpeed and add a random factor
+        this.speed = baseAsteroidSpeed + Math.random() * 1.5;
         this.rotation = Math.random() * Math.PI * 2;
         this.sides = Math.floor(Math.random() * 5) + 8;
         this.shape = [];
@@ -157,7 +177,7 @@ class Asteroid {
         if (this.x < -this.radius) this.x = canvas.width + this.radius;
         if (this.x > canvas.width + this.radius) this.x = -this.radius;
         if (this.y < -this.radius) this.y = canvas.height + this.radius;
-        if (this.y > canvas.height + this.radius) this.y = -this.radius;
+        if (this.y > canvas.height + this.radius) this.y = 0;
     }
 }
 
@@ -305,9 +325,21 @@ function playerHit() {
 }
 
 function spawnAsteroids() {
-    if (asteroids.length < 5 + Math.floor(score / 1000)) {
+    const currentTime = performance.now();
+    // Adjust spawn interval and asteroid speed based on score
+    const dynamicSpawnInterval = Math.max(500, asteroidSpawnInterval - Math.floor(score / 50) * 10); // Faster spawning
+    const dynamicAsteroidSpeed = baseAsteroidSpeed + Math.floor(score / 1000) * 0.5; // Faster asteroids
+
+    if (currentTime - lastAsteroidSpawnTime > dynamicSpawnInterval && asteroids.length < 5 + Math.floor(score / 1000)) {
         asteroids.push(new Asteroid());
+        lastAsteroidSpawnTime = currentTime;
     }
+    // Update asteroid speed for existing asteroids (optional, but makes them speed up)
+    asteroids.forEach(asteroid => {
+        if (asteroid.speed < dynamicAsteroidSpeed + 1.5) { // Ensure they don't get too fast too quickly
+            asteroid.speed = dynamicAsteroidSpeed + Math.random() * 1.5;
+        }
+    });
 }
 
 function updateUI() {
@@ -375,6 +407,7 @@ function startGame() {
     setTimeout(() => player.isInvincible = false, 2000);
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
+    mobileControls.classList.add('active'); // Show mobile controls
     loop();
 }
 
@@ -387,6 +420,7 @@ function endGame() {
     }
     finalScoreEl.textContent = `FINAL SCORE: ${score}`;
     gameOverScreen.style.display = 'flex';
+    mobileControls.classList.remove('active'); // Hide mobile controls
 }
 
 // Audio
@@ -410,7 +444,7 @@ function playSound(sound) {
     }
 }
 
-// Event Listeners
+// Event Listeners for Keyboard
 window.addEventListener('keydown', e => {
     if (gameRunning) {
         if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
@@ -423,9 +457,38 @@ window.addEventListener('keyup', e => {
     }
 });
 
+// Event Listener for Mouse Click (shooting)
 canvas.addEventListener('click', () => {
     if (gameRunning) shoot();
 });
+
+// New: Event Listeners for Mobile Controls (touch and mouse down/up for broader compatibility)
+rotateLeftButton.addEventListener('touchstart', () => { keys.mobileRotateLeft = true; });
+rotateLeftButton.addEventListener('touchend', () => { keys.mobileRotateLeft = false; });
+rotateLeftButton.addEventListener('mousedown', () => { keys.mobileRotateLeft = true; });
+rotateLeftButton.addEventListener('mouseup', () => { keys.mobileRotateLeft = false; });
+rotateLeftButton.addEventListener('mouseleave', () => { keys.mobileRotateLeft = false; }); // Important for mouse events
+
+rotateRightButton.addEventListener('touchstart', () => { keys.mobileRotateRight = true; });
+rotateRightButton.addEventListener('touchend', () => { keys.mobileRotateRight = false; });
+rotateRightButton.addEventListener('mousedown', () => { keys.mobileRotateRight = true; });
+rotateRightButton.addEventListener('mouseup', () => { keys.mobileRotateRight = false; });
+rotateRightButton.addEventListener('mouseleave', () => { keys.mobileRotateRight = false; });
+
+thrustButton.addEventListener('touchstart', () => { keys.mobileThrust = true; });
+thrustButton.addEventListener('touchend', () => { keys.mobileThrust = false; });
+thrustButton.addEventListener('mousedown', () => { keys.mobileThrust = true; });
+thrustButton.addEventListener('mouseup', () => { keys.mobileThrust = false; });
+thrustButton.addEventListener('mouseleave', () => { keys.mobileThrust = false; });
+
+shootButton.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // Prevent default touch behavior like scrolling/zooming
+    if (gameRunning) shoot();
+});
+shootButton.addEventListener('click', () => { // Keep click for desktop testing
+    if (gameRunning) shoot();
+});
+
 
 startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', startGame);
@@ -433,6 +496,9 @@ restartButton.addEventListener('click', startGame);
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth * 0.9;
     canvas.height = window.innerHeight * 0.9;
+    // Reposition player if canvas size changes drastically
+    player.x = canvas.width / 2;
+    player.y = canvas.height / 2;
 });
 
 updateUI();

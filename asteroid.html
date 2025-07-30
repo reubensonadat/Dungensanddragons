@@ -18,12 +18,46 @@
         <div id="start-screen">
             <h1>ASTEROID AVOIDER</h1>
             <p>Use WASD or Arrow Keys to move. Click to shoot.</p>
+            <p>On mobile, use the on-screen controls.</p>
             <button id="start-button">START GAME</button>
         </div>
         <div id="game-over-screen">
             <h1>GAME OVER</h1>
             <p id="final-score"></p>
             <button id="restart-button">RESTART</button>
+        </div>
+
+        <!-- Mobile Controls -->
+        <div id="mobile-controls">
+            <div id="left-controls">
+                <button id="rotate-left-button" class="mobile-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <button id="rotate-right-button" class="mobile-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+            <div id="right-controls">
+                <button id="thrust-button" class="mobile-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="12 6 12 18"></polyline>
+                        <polyline points="6 12 18 12"></polyline>
+                    </svg>
+                </button>
+                <button id="shoot-button" class="mobile-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="16" y1="12" x2="12" y2="12"></line>
+                        <line x1="8" y1="12" x2="12" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
