@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asteroid Avoider</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="asteroid.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-container">
+            <div id="score">SCORE: 0</div>
+            <div id="lives">LIVES: 3</div>
+            <div id="high-score">HIGH SCORE: 0</div>
+        </div>
+        <div id="start-screen">
+            <h1>ASTEROID AVOIDER</h1>
+            <p>Use WASD or Arrow Keys to move. Click to shoot.</p>
+            <button id="start-button">START GAME</button>
+        </div>
+        <div id="game-over-screen">
+            <h1>GAME OVER</h1>
+            <p id="final-score"></p>
+            <button id="restart-button">RESTART</button>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <script src="asteroid.js"></script>
+</body>
+</html>

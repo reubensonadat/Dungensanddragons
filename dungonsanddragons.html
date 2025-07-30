@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dungeon Crawler: Combined Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="flex items-center justify-center min-h-screen p-2 sm:p-4">
+
+    <!-- Main Game Container -->
+    <div id="game-container" class="game-container bg-gray-800 rounded-lg p-3 sm:p-4 md:p-6 w-full max-w-7xl mx-auto hidden">
+        <!-- Top Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-4 border-b border-gray-700 pb-3 gap-2">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl text-yellow-400 tracking-wider text-center sm:text-left">Dungeon Crawler</h1>
+            <div class="flex items-center gap-3 sm:gap-4 md:gap-6 text-base sm:text-lg md:text-xl">
+                 <div id="player-gold-display" class="text-yellow-400">💰 0</div>
+                 <div id="player-potions-display" class="text-red-400">🧪 0</div>
+                 <div id="dungeon-level-display" class="text-gray-400 text-sm sm:text-base">Level: 1</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+            <!-- Player Info -->
+            <div id="player-info-container" class="lg:col-span-1 space-y-4 order-2 lg:order-1">
+                <!-- Player card will be injected here -->
+            </div>
+
+            <!-- Main Combat Area -->
+            <div class="lg:col-span-2 order-1 lg:order-2">
+                <div id="turn-indicator-container" class="text-center mb-2 sm:mb-4 text-xl md:text-2xl font-bold"></div>
+                <div class="relative text-center mb-4 sm:mb-6">
+                    <div id="enemy-damage-container" class="absolute w-full h-full top-0 left-0"></div>
+                    <div id="enemy-status-effects" class="absolute top-0 right-0 flex gap-2 p-2"></div>
+                    <h2 id="enemy-name" class="text-xl sm:text-2xl md:text-3xl mb-2 text-red-400">Enemy</h2>
+                    <div id="enemy-art-container" class="flex justify-center mb-3 h-28 sm:h-32 items-center"></div>
+                    <div class="health-bar-container max-w-md mx-auto">
+                        <div id="enemy-health-bar" class="health-bar h-5 sm:h-6 rounded-md text-xs sm:text-sm font-bold text-gray-900 flex items-center justify-center" style="width: 100%;"></div>
+                    </div>
+                    <p id="enemy-description" class="text-xs sm:text-sm italic text-gray-400 mt-2 h-8 sm:h-10"></p>
+                </div>
+
+                <div id="action-buttons" class="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6"></div>
+                <div class="bg-gray-900 rounded-lg p-2 sm:p-4 h-48 sm:h-56 overflow-y-auto border border-gray-700" aria-live="polite">
+                    <div id="game-log"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="text-center p-4 sm:p-8">
+        <h1 class="text-4xl sm:text-5xl text-yellow-400 mb-6 sm:mb-8" style="font-family: 'MedievalSharp', cursive;">Dungeon Crawler</h1>
+        <div id="auth-status" class="text-gray-500 mb-4 text-xs">Connecting...</div>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button id="continue-btn" class="btn bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-lg text-lg sm:text-2xl hidden">Continue Adventure</button>
+            <button id="start-game-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-lg text-lg sm:text-2xl">Begin New Adventure</button>
+        </div>
+    </div>
+
+    <!-- Class Selection Screen -->
+    <div id="class-selection-screen" class="modal hidden justify-center items-center fixed inset-0 bg-black bg-opacity-75 z-50 p-4">
+        <div class="bg-gray-800 p-6 sm:p-8 rounded-lg shadow-2xl text-center w-full max-w-5xl">
+            <h2 class="text-3xl sm:text-4xl text-yellow-400 mb-6" style="font-family: 'MedievalSharp', cursive;">Choose Your Class</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
+                <div id="select-warrior" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer"><h3 class="text-xl sm:text-2xl text-red-400 mb-2">Warrior</h3><p class="text-gray-300 text-sm sm:text-base">A master of arms with high health and defense.</p></div>
+                <div id="select-mage" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer"><h3 class="text-xl sm:text-2xl text-blue-400 mb-2">Mage</h3><p class="text-gray-300 text-sm sm:text-base">A powerful sorcerer who wields devastating elemental magic.</p></div>
+                <div id="select-rogue" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer"><h3 class="text-xl sm:text-2xl text-green-400 mb-2">Rogue</h3><p class="text-gray-300 text-sm sm:text-base">A swift and deadly assassin who strikes from the shadows.</p></div>
+                <div id="select-cleric" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer"><h3 class="text-xl sm:text-2xl text-yellow-200 mb-2">Cleric</h3><p class="text-gray-300 text-sm sm:text-base">A devout warrior who uses divine power to smite foes and heal.</p></div>
+                <div id="select-paladin" class="class-card bg-gray-700 p-4 sm:p-6 rounded-lg cursor-pointer lg:col-span-2 xl:col-span-1"><h3 class="text-xl sm:text-2xl text-indigo-300 mb-2">Paladin</h3><p class="text-gray-300 text-sm sm:text-base">A holy knight blending martial prowess with divine blessings.</p></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="modal hidden justify-center items-center fixed inset-0 bg-black bg-opacity-75 z-50 p-4">
+        <div class="text-center bg-gray-800 p-6 sm:p-10 rounded-lg shadow-2xl">
+             <p id="game-over-message" class="text-3xl sm:text-5xl mb-6"></p>
+             <div id="game-over-stats" class="text-base sm:text-lg text-gray-300 mb-6 space-y-2"></div>
+             <button id="new-game-btn" class="btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 sm:px-8 rounded-lg text-xl sm:text-2xl">Return to Main Menu</button>
+        </div>
+    </div>
+
+    <!-- Event Screen (Shop, Treasure, etc.) -->
+    <div id="event-screen" class="modal hidden justify-center items-center fixed inset-0 bg-black bg-opacity-75 z-50 p-4">
+        <div id="event-content" class="bg-gray-800 p-6 sm:p-8 rounded-lg shadow-2xl w-full max-w-3xl game-container overflow-y-auto max-h-[90vh]">
+            <!-- Content for shop or treasure is injected here -->
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

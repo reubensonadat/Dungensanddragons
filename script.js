@@ -99,15 +99,15 @@
                 paladin: { name: 'Paladin', art: `<svg class="character-art" viewBox="0 0 100 100"><g fill="#B0BEC5"><rect x="25" y="20" width="50" height="70" rx="8" /><rect x="35" y="10" width="30" height="20" rx="4" /><path d="M40 50 L 60 50 L 50 70 Z" fill="#FFCA28"/></g><g fill="#FFCA28"><rect x="48" y="5" width="4" height="10"/></g></svg>`, hp: 110, mana: 50, baseDamage: 11, abilities: [{ id: 'divine_strike', cost: 15 }, { id: 'lay_on_hands', cost: 25 }] }
             },
             abilities: {
-                power_strike: { name: 'Power Strike', description: 'A mighty blow dealing 1.5x to 2x weapon damage.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 1.75); enemy.takeDamage(dmg); UI.log(`${player.name} uses Power Strike for ${dmg} damage!`, 'attack'); } },
+                power_strike: { name: 'Power Strike', description: 'A mighty blow dealing 2x to 3x weapon damage.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage() * 2, 1.0); enemy.takeDamage(dmg); UI.log(`${player.name} uses Power Strike for ${dmg} damage!`, 'attack'); } },
                 shield_wall: { name: 'Shield Wall', description: 'Reduces incoming damage by 50% for 2 turns.', execute: (player, enemy) => { player.addStatus('shielded', 2); UI.log(`${player.name} raises their shield!`, 'ability'); } },
                 fireball: { name: 'Fireball', description: 'Hurls a ball of fire for 25-50 damage.', execute: (player, enemy) => { const dmg = Game.calculateDamage(38, 0.7); enemy.takeDamage(dmg); Audio.play('fireball'); UI.log(`${player.name} casts Fireball for ${dmg} damage!`, 'attack'); } },
                 mana_drain: { name: 'Mana Drain', description: 'Drains 10 mana from the enemy and restores it to you.', execute: (player, enemy) => { const drained = enemy.drainMana(10); player.updateMana(drained); UI.showDamageIndicator(drained, 'player', false, 'drain'); UI.log(`${player.name} drains ${drained} mana!`, 'ability'); } },
-                poison_stab: { name: 'Poison Stab', description: 'Deals 2x to 3x weapon damage and poisons the enemy for 3 turns.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 2.5); enemy.takeDamage(dmg); enemy.addStatus('poisoned', 3); UI.log(`${player.name} stabs with a poisoned blade for ${dmg} damage!`, 'attack'); } },
-                eviscerate: { name: 'Eviscerate', description: 'A vicious attack dealing 2x to 3x weapon damage.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 2.8); enemy.takeDamage(dmg); UI.log(`${player.name} eviscerates for a massive ${dmg} damage!`, 'attack'); } },
-                smite: { name: 'Smite', description: 'Deals 2x to 3x damage and heals you for 20% of damage dealt.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 2.5); enemy.takeDamage(dmg); const healed = Math.round(dmg * 0.2); player.heal(healed); UI.log(`${player.name} smites the enemy for ${dmg} damage and recovers ${healed} health.`, 'attack'); } },
+                poison_stab: { name: 'Poison Stab', description: 'Deals 2x to 3x weapon damage and poisons the enemy for 3 turns.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage() * 2, 1.0); enemy.takeDamage(dmg); enemy.addStatus('poisoned', 3); UI.log(`${player.name} stabs with a poisoned blade for ${dmg} damage!`, 'attack'); } },
+                eviscerate: { name: 'Eviscerate', description: 'A vicious attack dealing 2x to 3x weapon damage.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage() * 2, 1.0); enemy.takeDamage(dmg); UI.log(`${player.name} eviscerates for a massive ${dmg} damage!`, 'attack'); } },
+                smite: { name: 'Smite', description: 'Deals 2x to 3x weapon damage and heals you for 20% of damage dealt.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage() * 2, 1.0); enemy.takeDamage(dmg); const healed = Math.round(dmg * 0.2); player.heal(healed); UI.log(`${player.name} smites the enemy for ${dmg} damage and recovers ${healed} health.`, 'attack'); } },
                 holy_light: { name: 'Holy Light', description: 'Heals you for 40% of your max HP.', execute: (player, enemy) => { const healed = Math.round(player.maxHp * 0.4); player.heal(healed); UI.log(`${player.name} is bathed in Holy Light, healing for ${healed} health.`, 'heal'); } },
-                divine_strike: { name: 'Divine Strike', description: 'Deals 2x to 3x damage. 25% chance to stun.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage(), 2.5); enemy.takeDamage(dmg); UI.log(`${player.name}'s Divine Strike hits for ${dmg} damage!`, 'attack'); if (Math.random() < 0.25) { enemy.addStatus('stunned', 1); UI.log('The enemy is stunned by divine power!', 'debuff'); } } },
+                divine_strike: { name: 'Divine Strike', description: 'Deals 2x to 3x weapon damage. 25% chance to stun.', execute: (player, enemy) => { const dmg = Game.calculateDamage(player.getDamage() * 2, 1.0); enemy.takeDamage(dmg); UI.log(`${player.name}'s Divine Strike hits for ${dmg} damage!`, 'attack'); if (Math.random() < 0.25) { enemy.addStatus('stunned', 1); UI.log('The enemy is stunned by divine power!', 'debuff'); } } },
                 lay_on_hands: { name: 'Lay on Hands', description: 'A powerful heal for 50% of your max HP.', execute: (player, enemy) => { const healed = Math.round(player.maxHp * 0.5); player.heal(healed); UI.log(`${player.name} uses Lay on Hands, restoring ${healed} health.`, 'heal'); } },
             },
             items: {
@@ -271,14 +271,48 @@
                 const item = this.inventory[itemIndex];
                 if (!item) return;
 
-                if (this.equipment[item.type]) {
-                    this.inventory.push(this.equipment[item.type]);
-                }
+                // Equip the item
                 this.equipment[item.type] = item;
                 this.inventory.splice(itemIndex, 1);
                 Audio.play('equip');
                 UI.log(`Equipped ${item.name}.`, 'info');
                 UI.updatePlayerInfo();
+
+                // Mark item as equipped and used
+                item._used = false;
+            }
+
+            // Override getDamage and getDefense to consume equipped item after first use
+            getDamage() {
+                const weapon = this.equipment.weapon;
+                let damage = this.baseDamage;
+                if (weapon) {
+                    damage += weapon.damage;
+                    if (!weapon._used) {
+                        weapon._used = true;
+                        // Remove weapon after first use
+                        this.equipment.weapon = null;
+                        UI.log(`${weapon.name} was consumed after use.`, 'info');
+                        UI.updatePlayerInfo();
+                    }
+                }
+                return damage;
+            }
+
+            getDefense() {
+                const armor = this.equipment.armor;
+                let defense = 0;
+                if (armor) {
+                    defense += armor.defense;
+                    if (!armor._used) {
+                        armor._used = true;
+                        // Remove armor after first use
+                        this.equipment.armor = null;
+                        UI.log(`${armor.name} was consumed after use.`, 'info');
+                        UI.updatePlayerInfo();
+                    }
+                }
+                return defense;
             }
         }
 
@@ -524,8 +558,13 @@
 
                 player.abilities.forEach(abilityRef => {
                     const ability = GameData.abilities[abilityRef.id];
+                    let tooltip = ability.description;
+                    // Show correct damage range for special attacks
+                    if (["power_strike","poison_stab","eviscerate","smite","divine_strike"].includes(abilityRef.id)) {
+                        tooltip = tooltip.replace(/\d+(\.\d+)?x to \d+(\.\d+)?x|\d+(\.\d+)?x|1.5x to 2x|2x to 3x|1.2x|1.3x/g, "2x to 3x");
+                    }
                     const btn = this.createButton(ability.name, 'bg-blue-600', 'hover:bg-blue-700', () => Game.playerTurn(abilityRef.id), player.mana < abilityRef.cost);
-                    btn.innerHTML += `<span class="tooltip">${ability.description} (Cost: ${abilityRef.cost} Mana)</span>`;
+                    btn.innerHTML += `<span class="tooltip">${tooltip} (Cost: ${abilityRef.cost} Mana)</span>`;
                     DOMElements.actionButtonsContainer.appendChild(btn);
                 });
 

@@ -1,0 +1,53 @@
+body {
+    background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+}
+
+.game-card {
+    background-color: #1a202c;
+    border: 2px solid #4a5568;
+    border-radius: 1rem;
+    padding: 2rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    perspective: 1000px;
+    width: 300px;
+    height: 200px;
+    text-decoration: none;
+    color: white;
+}
+
+.game-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5), 0 0 40px rgba(76, 175, 80, 0.3) inset;
+}
+
+.game-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.game-card:hover .game-card-inner {
+    transform: rotateY(180deg);
+}
+
+.game-card-front, .game-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-card-back {
+    background-color: #2d3748;
+    color: white;
+    transform: rotateY(180deg);
+    border-radius: 0.75rem;
+}
