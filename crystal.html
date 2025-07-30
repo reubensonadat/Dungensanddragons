@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Crusher</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="crystal.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-container">
+            <div id="level-display">LEVEL: 1</div>
+            <div id="shots">SHOTS: 3</div>
+            <div id="score">SCORE: 0</div>
+            <div id="high-score">HIGH SCORE: 0</div>
+        </div>
+        <div id="start-screen">
+            <h1>CRYSTAL CRUSHER</h1>
+            <p>Aim and launch projectiles to destroy crystals!</p>
+            <p>Collect gems and complete objectives.</p>
+            <button id="start-button">START GAME</button>
+        </div>
+        <div id="level-complete-screen">
+            <h1>LEVEL COMPLETE!</h1>
+            <p id="level-score"></p>
+            <button id="next-level-button">NEXT LEVEL</button>
+        </div>
+        <div id="game-over-screen">
+            <h1>GAME OVER</h1>
+            <p id="final-score"></p>
+            <button id="restart-button">PLAY AGAIN</button>
+        </div>
+        <div id="aim-indicator"></div>
+    </div>
+    <script src="crystal.js"></script>
+</body>
+</html>

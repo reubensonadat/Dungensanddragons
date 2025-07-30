@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #1a0638, #0c0120);
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(100, 70, 200, 0.1) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(200, 100, 255, 0.1) 0%, transparent 25%);
+}
+
+#game-container {
+    position: relative;
+    border: 3px solid #9d4edd;
+    box-shadow: 0 0 20px #9d4edd, 0 0 40px rgba(157, 78, 221, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    background: linear-gradient(to bottom, #0c0120, #1a0638);
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(120, 80, 200, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 30% 70%, rgba(180, 100, 255, 0.05) 0%, transparent 20%);
+}
+
+#ui-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1em;
+    color: #e0aaff;
+    text-shadow: 0 0 5px #9d4edd;
+    background-color: rgba(30, 10, 60, 0.7);
+    padding: 8px 15px;
+    border-radius: 20px;
+}
+
+#start-screen, 
+#level-complete-screen, 
+#game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 5, 25, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 20;
+}
+
+#level-complete-screen, 
+#game-over-screen {
+    display: none;
+}
+
+h1 {
+    font-size: 3.5em;
+    color: #e0aaff;
+    text-shadow: 0 0 10px #9d4edd, 0 0 20px #c77dff;
+    margin-bottom: 20px;
+    letter-spacing: 3px;
+}
+
+p {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: #c77dff;
+}
+
+button {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3em;
+    padding: 12px 30px;
+    background-color: transparent;
+    border: 2px solid #9d4edd;
+    color: #e0aaff;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 0 10px #9d4edd;
+    border-radius: 30px;
+    margin-top: 20px;
+    letter-spacing: 1px;
+}
+
+button:hover {
+    background-color: #7b2cbf;
+    color: #f8f9fa;
+    box-shadow: 0 0 20px #9d4edd, 0 0 40px rgba(157, 78, 221, 0.5);
+    transform: translateY(-3px);
+}
+
+#aim-indicator {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px dashed #ff9e00;
+    pointer-events: none;
+    display: none;
+    box-shadow: 0 0 10px #ff9e00;
+    z-index: 10;
+}
+
+/* Crystal colors (these classes are not directly used by Matter.js renderer) */
+.crystal-glass { background: linear-gradient(135deg, #a3d9ff, #7ebaff); }
+.crystal-ruby { background: linear-gradient(135deg, #ff6b6b, #ff2b2b); }
+.crystal-emerald { background: linear-gradient(135deg, #6bff9c, #2bff6b); }
+.crystal-amethyst { background: linear-gradient(135deg, #d9a3ff, #c27bff); }
+.crystal-topaz { background: linear-gradient(135deg, #ffd96b, #ffc02b); }
